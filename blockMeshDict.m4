@@ -447,10 +447,10 @@ define(Nl2, 1500)
 //Number of cells in z direction
 define(Nl3, 1)
 
-//Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b TODO calc it based on number of elements on the spline
+//Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b
 define(Nl4, 100)
 
-//Number of meshes on the back part of airfoil edges p9-p11 and p10-p11 TODO calc it based on number of elements on the spline
+//Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
 define(Nl5, 70)
 
 //Number of interpolation points along the airfoil for defining the splines
