@@ -660,20 +660,12 @@ edges
 
 patches
 (
-    wall airfoil
+    wall walls
     (
         btQuad(p08, p10)
         btQuad(p10, p11)
         btQuad(p08, p09)
         btQuad(p09, p11)
-    )
-    
-    patch farBoundaries
-    (
-        btQuad(p06, p07)
-        btQuad(p05, p06)
-        btQuad(p02, p03)
-        btQuad(p01, p02)
     )
     
     patch inlet
@@ -686,6 +678,28 @@ patches
     (
         btQuad(p04, p05)
         btQuad(p03, p04)
+
+        btQuad(p06, p07)
+        btQuad(p05, p06)
+        btQuad(p02, p03)
+        btQuad(p01, p02)
+    )
+
+    empty frontAndBack
+    (
+        topQuad(p00, p08, p09, p07)
+        topQuad(p09, p11, p06, p07)
+        topQuad(p11, p04, p05, p06)
+        topQuad(p00, p01, p10, p08)
+        topQuad(p01, p02, p11, p10)
+        topQuad(p02, p03, p04, p11)
+
+        bottomQuad(p00, p08, p09, p07)
+        bottomQuad(p09, p11, p06, p07)
+        bottomQuad(p11, p04, p05, p06)
+        bottomQuad(p00, p01, p10, p08)
+        bottomQuad(p01, p02, p11, p10)
+        bottomQuad(p02, p03, p04, p11)
     )
 );
 
