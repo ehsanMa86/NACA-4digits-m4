@@ -459,10 +459,10 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y direction
-define(E1, 100)
+define(E1, 300)
 
 //Expansion ratio in downstream side
-define(E2, 100)
+define(E2, 5)
 
 //Expansion ratio in inlet
 define(E3, 10)
@@ -511,20 +511,21 @@ define(axlAlphaC, xlAlphaC(axl, ayl, alpha, Naf))
 define(aylAlphaC, ylAlphaC(axl, ayl, alpha, Naf))
 
 // define Cmax
-define(Cmax, maxIndex(ayc, ayt, p, Naf))
+define(Cmax_orig, maxIndex(ayc, ayt, p, Naf))
+define(Cmax, calc(Cmax_orig*0.5))
 
 // Move the airfoil
 define(noseX, calc((-1*L1 + axuAlphaC[Cmax])*cos(alpha)))
 define(noseY, calc((L1 - axuAlphaC[Cmax])*sin(alpha)))
 
 define(x00, noseX)
-define(x01, calc(axlAlphaC[Cmax]))
-define(x02, calc(axuAlphaC[Naf]))
+define(x01, calc(axlAlphaC[Cmax]-1))
+define(x02, calc(axuAlphaC[Naf]+1))
 define(x03, L2)
 define(x04, L2)
 define(x05, L2)
-define(x06, calc(axuAlphaC[Naf]))
-define(x07, calc(axuAlphaC[Cmax]))
+define(x06, calc(axuAlphaC[Naf]+1))
+define(x07, calc(axuAlphaC[Cmax]-1))
 define(x08, 0)
 define(x09, calc(axuAlphaC[Cmax]))
 define(x10, calc(axlAlphaC[Cmax]))
@@ -603,37 +604,37 @@ blocks
     hex2D(p00, p01, p10, p08)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (calc(1/4) 4 4 calc(1/4) calc(1/E1) calc(1/E1) calc(1/E1) calc(1/E1) 1 1 1 1)
     
     //B1
     hex2D(p01, p02, p11, p10)
     square
     (Nl5 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (1 calc(1/E1) 1)
     
     //B2
     hex2D(p02, p03, p04, p11)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (calc(E2/2) E2 E2 calc(E2/2) calc(1/E1) calc(2/E1) calc(2/E1) calc(1/E1) 1 1 1 1)
     
     //B3
     hex2D(p11, p04, p05, p06)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (E2 calc(E2/2) calc(E2/2) E2 E1 calc(E1/2) calc(E1/2) E1 1 1 1 1)
     
     //B4
     hex2D(p09, p11, p06, p07)
     square
     (Nl5 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (1 E1 1)
     
     //B5
     hex2D(p08, p09, p07, p00)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (4 calc(1/4) calc(1/4) 4 E1 E1 E1 E1 1 1 1 1)
 );
 
 edges
