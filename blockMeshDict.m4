@@ -529,7 +529,7 @@ define(x07, calc(axuAlphaC[Cmax]-1))
 define(x08, 0)
 define(x09, calc(axuAlphaC[Cmax]))
 define(x10, calc(axlAlphaC[Cmax]))
-define(x11, calc(axuAlphaC[Naf]))
+define(x11, calc((axuAlphaC[Naf]+axlAlphaC[Naf])/2))
 
 define(y00, noseY)
 define(y01, calc(-1*L1))
@@ -542,7 +542,7 @@ define(y07, L1)
 define(y08, 0)
 define(y09, calc(ayuAlphaC[Cmax]))
 define(y10, calc(aylAlphaC[Cmax]))
-define(y11, calc(aylAlphaC[Naf]))
+define(y11, calc((ayuAlphaC[Naf]+aylAlphaC[Naf])/2))
 
 //Define the points for the inlet arc allocation
 define(p12, 45)
