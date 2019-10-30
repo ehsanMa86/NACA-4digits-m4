@@ -563,6 +563,13 @@ define(y13, calc(-1*L1*sp13))
 define(azbAlphaC, zeroArrayCommas(Naf, Zb))
 define(azAlphaC, zeroArrayCommas(Naf, z))
 
+// Nose grading as a function of the nose's aspect ratio to reduce skewness
+// f(x[Cmax]/y[Cmax])
+// where f(1)=1 => no nose grading for a circle
+// exponent 1.5 is chosen empirically
+define(uNoseGrading, calc(abs(axu[Cmax]/ayu[Cmax])**1.5))
+define(lNoseGrading, calc(abs(axl[Cmax]/ayl[Cmax])**1.5))
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 define(vert, (x$1$2 y$1$2 $3))
@@ -604,7 +611,7 @@ blocks
     hex2D(p00, p01, p10, p08)
     square
     (Nl4 Nl1 Nl3)
-    edgeGrading (calc(1/4) 4 4 calc(1/4) calc(1/E1) calc(1/E1) calc(1/E1) calc(1/E1) 1 1 1 1)
+    edgeGrading (calc(1/lNoseGrading) lNoseGrading lNoseGrading calc(1/lNoseGrading) calc(1/E1) calc(1/E1) calc(1/E1) calc(1/E1) 1 1 1 1)
     
     //B1
     hex2D(p01, p02, p11, p10)
@@ -634,7 +641,7 @@ blocks
     hex2D(p08, p09, p07, p00)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (4 calc(1/4) calc(1/4) 4 E1 E1 E1 E1 1 1 1 1)
+    simpleGrading (uNoseGrading calc(1/uNoseGrading) calc(1/uNoseGrading) uNoseGrading E1 E1 E1 E1 1 1 1 1)
 );
 
 edges
