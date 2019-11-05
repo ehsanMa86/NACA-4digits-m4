@@ -459,10 +459,10 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y direction
-define(E1, 100)
+define(E1, 300)
 
 //Expansion ratio in downstream side
-define(E2, 100)
+define(E2, 5)
 
 //Expansion ratio in inlet
 define(E3, 10)
@@ -511,24 +511,25 @@ define(axlAlphaC, xlAlphaC(axl, ayl, alpha, Naf))
 define(aylAlphaC, ylAlphaC(axl, ayl, alpha, Naf))
 
 // define Cmax
-define(Cmax, maxIndex(ayc, ayt, p, Naf))
+define(Cmax_orig, maxIndex(ayc, ayt, p, Naf))
+define(Cmax, calc(Cmax_orig*0.5))
 
 // Move the airfoil
 define(noseX, calc((-1*L1 + axuAlphaC[Cmax])*cos(alpha)))
 define(noseY, calc((L1 - axuAlphaC[Cmax])*sin(alpha)))
 
 define(x00, noseX)
-define(x01, calc(axlAlphaC[Cmax]))
-define(x02, calc(axuAlphaC[Naf]))
+define(x01, calc(axlAlphaC[Cmax]-1))
+define(x02, calc(axuAlphaC[Naf]+1))
 define(x03, L2)
 define(x04, L2)
 define(x05, L2)
-define(x06, calc(axuAlphaC[Naf]))
-define(x07, calc(axuAlphaC[Cmax]))
+define(x06, calc(axuAlphaC[Naf]+1))
+define(x07, calc(axuAlphaC[Cmax]-1))
 define(x08, 0)
 define(x09, calc(axuAlphaC[Cmax]))
 define(x10, calc(axlAlphaC[Cmax]))
-define(x11, calc(axuAlphaC[Naf]))
+define(x11, calc((axuAlphaC[Naf]+axlAlphaC[Naf])/2))
 
 define(y00, noseY)
 define(y01, calc(-1*L1))
@@ -541,7 +542,7 @@ define(y07, L1)
 define(y08, 0)
 define(y09, calc(ayuAlphaC[Cmax]))
 define(y10, calc(aylAlphaC[Cmax]))
-define(y11, calc(aylAlphaC[Naf]))
+define(y11, calc((ayuAlphaC[Naf]+aylAlphaC[Naf])/2))
 
 //Define the points for the inlet arc allocation
 define(p12, 45)
@@ -561,6 +562,13 @@ define(y13, calc(-1*L1*sp13))
 
 define(azbAlphaC, zeroArrayCommas(Naf, Zb))
 define(azAlphaC, zeroArrayCommas(Naf, z))
+
+// Nose grading as a function of the nose's aspect ratio to reduce skewness
+// f(x[Cmax]/y[Cmax])
+// where f(1)=1 => no nose grading for a circle
+// exponent 1.5 is chosen empirically
+define(uNoseGrading, calc(abs(axu[Cmax]/ayu[Cmax])**1.5))
+define(lNoseGrading, calc(abs(axl[Cmax]/ayl[Cmax])**1.5))
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -603,37 +611,37 @@ blocks
     hex2D(p00, p01, p10, p08)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (calc(1/lNoseGrading) lNoseGrading lNoseGrading calc(1/lNoseGrading) calc(1/E1) calc(1/E1) calc(1/E1) calc(1/E1) 1 1 1 1)
     
     //B1
     hex2D(p01, p02, p11, p10)
     square
     (Nl5 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (1 calc(1/E1) 1)
     
     //B2
     hex2D(p02, p03, p04, p11)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (calc(E2/2) E2 E2 calc(E2/2) calc(1/E1) calc(2/E1) calc(2/E1) calc(1/E1) 1 1 1 1)
     
     //B3
     hex2D(p11, p04, p05, p06)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    edgeGrading (E2 calc(E2/2) calc(E2/2) E2 E1 calc(E1/2) calc(E1/2) E1 1 1 1 1)
     
     //B4
     hex2D(p09, p11, p06, p07)
     square
     (Nl5 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (1 E1 1)
     
     //B5
     hex2D(p08, p09, p07, p00)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 1 1)
+    simpleGrading (uNoseGrading calc(1/uNoseGrading) calc(1/uNoseGrading) uNoseGrading E1 E1 E1 E1 1 1 1 1)
 );
 
 edges
@@ -660,20 +668,12 @@ edges
 
 patches
 (
-    wall airfoil
+    wall walls
     (
         btQuad(p08, p10)
         btQuad(p10, p11)
         btQuad(p08, p09)
         btQuad(p09, p11)
-    )
-    
-    patch farBoundaries
-    (
-        btQuad(p06, p07)
-        btQuad(p05, p06)
-        btQuad(p02, p03)
-        btQuad(p01, p02)
     )
     
     patch inlet
@@ -686,6 +686,28 @@ patches
     (
         btQuad(p04, p05)
         btQuad(p03, p04)
+
+        btQuad(p06, p07)
+        btQuad(p05, p06)
+        btQuad(p02, p03)
+        btQuad(p01, p02)
+    )
+
+    empty frontAndBack
+    (
+        topQuad(p00, p08, p09, p07)
+        topQuad(p09, p11, p06, p07)
+        topQuad(p11, p04, p05, p06)
+        topQuad(p00, p01, p10, p08)
+        topQuad(p01, p02, p11, p10)
+        topQuad(p02, p03, p04, p11)
+
+        bottomQuad(p00, p08, p09, p07)
+        bottomQuad(p09, p11, p06, p07)
+        bottomQuad(p11, p04, p05, p06)
+        bottomQuad(p00, p01, p10, p08)
+        bottomQuad(p01, p02, p11, p10)
+        bottomQuad(p02, p03, p04, p11)
     )
 );
 
